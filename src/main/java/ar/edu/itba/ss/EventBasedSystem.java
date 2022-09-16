@@ -35,7 +35,7 @@ public class EventBasedSystem {
 
         try (FileWriter outFile = new FileWriter("out.txt")) {
             for (int i = 0; i < MAX_ITER; i++) {
-                particles = space.getParticleList();
+                particles = space.getParticleMap().values().stream().toList();//TODO: mirar
                 outFile.write(particleAmount + "\n");
                 outFile.write("iter " + i + "\n");
 

@@ -6,6 +6,8 @@ public class Collision implements Comparable<Collision> {
     private long indexB;
     private double tc;
 
+    private boolean isInvalid = false;
+
     public Collision(long indexA, long indexB, double tc) {
         this.indexA = indexA;
         this.indexB = indexB;
@@ -26,6 +28,14 @@ public class Collision implements Comparable<Collision> {
 
     public double getTc() {
         return tc;
+    }
+
+    public boolean isInvalid() {
+        return isInvalid;
+    }
+
+    public void setInvalid(boolean invalid) {
+        isInvalid = invalid;
     }
 
     @Override

@@ -16,7 +16,6 @@ public class ParticleGenerator {
         boolean colliding;
         for (int i = 0; i < totalParticles; i++) {
             Particle newParticle = new Particle(speed, mass, radius);
-
             do {
                 position = randomPosition(height, width, radius);
                 colliding = false;
@@ -29,7 +28,6 @@ public class ParticleGenerator {
             } while (colliding);
 
             newParticle.setPosition(position);
-            System.out.println("Particle " + i + " generated at " + position.getX() + ", " + position.getY());
             particles.add(newParticle);
         }
 

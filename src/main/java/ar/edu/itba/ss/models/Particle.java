@@ -34,15 +34,21 @@ public class Particle {
     }
 
     public void collideWithParticle(Particle other, double delta, double sigma) {
-        double j = (2 * mass * other.getMass() + delta) / (sigma * (mass + other.getMass()));
+        double j = delta / sigma;
         double jx = (j * (position.getX() - other.getPosition().getX())) / sigma;
         double jy = (j * (position.getY() - other.getPosition().getY())) / sigma;
 
-        speedX += jx / mass;
-        speedY += jy / mass;
+        speedX -= jx;
+        speedY -= jy;
 
-        other.speedX -= jx / other.getMass();
-        other.speedY -= jx / other.getMass();
+        other.speedX += jx;
+        other.speedY += jy;
+
+//        System.out.println("Distance " + Math.sqrt(Math.pow(position.getX() - other.getPosition().getX(), 2) + Math.pow(position.getY() - other.getPosition().getY(), 2)));
+//
+//        System.out.println("Speed " + (Math.sqrt(speedX * speedX + speedY * speedY) + Math.sqrt(other.speedX * other.speedX + other.speedY * other.speedY)));
+//        System.out.println("Speed " + Math.sqrt(other.speedX * other.speedX + other.speedY * other.speedY));
+
     }
 
     public Point getPosition() {

@@ -13,13 +13,13 @@ public enum Walls {
     RIGHT(Walls.WIDTH, 0) {
         @Override
         public double getCollisionTime(Particle p) {
-            if (p.getSpeedX() > 0) {
+            if (p.getSpeedX() > 0)
                 return (getX() - p.getRadius() - p.getPosition().getX()) / p.getSpeedX();
-            }
+
             return Double.MAX_VALUE;
         }
     },
-    UP(0, 0) {
+    DOWN(0, 0) {
         @Override
         public double getCollisionTime(Particle p) {
             if (p.getSpeedY() < 0)
@@ -28,7 +28,7 @@ public enum Walls {
             return Double.MAX_VALUE;
         }
     },
-    DOWN(0, Walls.HEIGHT) {
+    UP(0, Walls.HEIGHT) {
         @Override
         public double getCollisionTime(Particle p) {
             if (p.getSpeedY() > 0)
@@ -38,29 +38,29 @@ public enum Walls {
         }
     },
 
-    SLIT_TOP(Walls.WIDTH / 2, 0) {
+    SLIT_TOP(Walls.WIDTH / 2, (Walls.HEIGHT + Walls.SLIT_HEIGHT) / 2) {
         @Override
         public double getCollisionTime(Particle p) {
             double height = (Walls.HEIGHT - Walls.SLIT_HEIGHT) / 2;
 
-            if (p.getPosition().getX() > getX()) { // Lado derecho
+            if (Double.compare(p.getPosition().getX(), getX()) > 0) { // Lado derecho
                 if (p.getSpeedX() > 0)
                     return Double.MAX_VALUE;
 
                 double tc = (getX() + p.getRadius() - p.getPosition().getX()) / p.getSpeedX();
                 double yTc = p.getPosition().getY() + p.getSpeedY() * tc;
 
-                if (yTc + p.getRadius() > height)
+                if (Double.compare(yTc - p.getRadius(), height) > 0)
                     return Double.MAX_VALUE;
 
                 return tc;
-            } else if (p.getPosition().getX() < getX()) { // Lado izquierdo
+            } else if (Double.compare(p.getPosition().getX(), getX()) < 0) { // Lado izquierdo
                 if (p.getSpeedX() < 0)
                     return Double.MAX_VALUE;
 
                 double tc = (getX() - p.getRadius() - p.getPosition().getX()) / p.getSpeedX();
                 double yTc = p.getPosition().getY() + p.getSpeedY() * tc;
-                if (yTc + p.getRadius() > height)
+                if (Double.compare(yTc + p.getRadius(), height) > 0)
                     return Double.MAX_VALUE;
 
                 return tc;
@@ -72,7 +72,7 @@ public enum Walls {
     },
 
     //TODO: checkear si height 0 es arriba
-    SLIT_BOTTOM(Walls.WIDTH / 2, (Walls.HEIGHT + Walls.SLIT_HEIGHT) / 2) {
+    SLIT_BOTTOM(Walls.WIDTH / 2, 0) {
         @Override
         public double getCollisionTime(Particle p) {
 

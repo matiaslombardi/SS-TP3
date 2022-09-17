@@ -13,7 +13,8 @@ public class Space {
 
 
     private boolean firstIter;
-    private Collision lastCollision;
+//    private Collision lastCollision;
+    private final List<Particle> particlesToAnalyze = new ArrayList<>();
 
     public Space(double height, double width, double slitSize, List<Particle> particles) {
         this.height = height;
@@ -24,18 +25,15 @@ public class Space {
         this.collisions = new PriorityQueue<>();
         collisionIndexes = new HashMap<>();
         firstIter = true;
-        lastCollision = null;
+//        lastCollision = null;
     }
 
     private void evolveState() {
         Collision firstCollision = collisions.poll();
-//        while (firstCollision.isInvalid()) {
-//            firstCollision = collisions.poll();
         if (firstCollision == null)
             return; // TODO capaz terminar la ejecucion con thr
-//        }
 
-        lastCollision = firstCollision;
+//        lastCollision = firstCollision;
         // get ids y si coincide en forEach, actualizar los angulos y velocidades
         for (Particle particle : particleMap.values())
             particle.updatePosition(firstCollision.getTc());
@@ -44,11 +42,19 @@ public class Space {
         long indexB = firstCollision.getIndexB();
         Particle particle = particleMap.get(indexA);
 
-        try {
+        particlesToAnalyze.clear();
+
+        particlesToAnalyze.add(particleMap.get(firstCollision.getIndexA()));
+        collisionIndexes.remove(firstCollision.getIndexA());
+
+        if (indexB < Walls.values().length){
             Walls wall = Walls.values()[(int) indexB];
             particle.collideWithWall(wall);
-        } catch (IndexOutOfBoundsException e) {
+        } else {
             Particle other = particleMap.get(indexB);
+
+            particlesToAnalyze.add(other);
+            collisionIndexes.remove(firstCollision.getIndexB());
 
             double[] deltaR = getDeltaR(particle, other);
             double[] deltaV = getDeltaV(particle, other);
@@ -57,8 +63,6 @@ public class Space {
             particle.collideWithParticle(other, dotProduct(deltaV, deltaR), sigma);
         }
 
-        collisionIndexes.remove(firstCollision.getIndexA());
-        collisionIndexes.remove(firstCollision.getIndexB());
         for (Collision collision : collisions)
             collision.updateTc(firstCollision.getTc());
     }
@@ -69,22 +73,13 @@ public class Space {
             toAnalyze = new ArrayList<>(particleMap.values());
             firstIter = false;
         } else {
-            toAnalyze = new ArrayList<>();
-            toAnalyze.add(particleMap.get(lastCollision.getIndexA()));
-
-            long indexB = lastCollision.getIndexB();
-            if (indexB >= Walls.values().length)
-                toAnalyze.add(particleMap.get(indexB));
+            toAnalyze = new ArrayList<>(particlesToAnalyze);
         }
 
-        analyzeCollision(toAnalyze);
+        List<Particle> pending = analyzeCollision(toAnalyze);
         evolveState();
+        particlesToAnalyze.addAll(pending); // TODO: Hacer mejor
     }
-
-    private void wallCollisions() { // TODO: como representamos slit?
-        particleMap.values().forEach(this::wallCollision);
-    }
-
     private Collision wallCollision(Particle particle) {
         double minTc = Double.MAX_VALUE;
         int ordinal = Walls.LEFT.ordinal();
@@ -97,71 +92,11 @@ public class Space {
             }
         }
 
-//        if (collisionIndexes.containsKey(particle.getId())) {
-//            if (Double.compare(minTc, collisionIndexes.get(particle.getId()).getTc()) > 0)
-//                return null; // si va a chocar con una particula antes no hagas nada
-//
-////            collisionIndexes.get(particle.getId()).setInvalid(true);
-//            collisions.remove(collisionIndexes.get(particle.getId()));
-//        }
-
-        Collision collision = new Collision(particle.getId(), ordinal, minTc);
-        //collisionIndexes.put(particle.getId(), collision);
-        //collisions.add(collision);
-        return collision;
+        return new Collision(particle.getId(), ordinal, minTc);
     }
 
-//    private void particleCollisions() {
-//        List<Particle> particles = new ArrayList<>(particleMap.values());
-//        for (int i = 0; i < particles.size() - 1; i++) {
-//            Particle particleI = particles.get(i);
-//
-//            double particleITc = Optional.ofNullable(collisionIndexes.get(particleI.getId()))
-//                    .map(Collision::getTc).orElse(Double.MAX_VALUE);
-//
-//            double minTc = Double.MAX_VALUE;
-//            Particle toCollide = null;
-//
-//            for (int j = i + 1; j < particles.size(); j++) {
-//                Particle particleJ = particles.get(j);
-//                double sigma = getSigma(particleJ, particleI);
-//
-//                double[] deltaR = getDeltaR(particleJ, particleI);
-//                double[] deltaV = getDeltaV(particleJ, particleI);
-//
-//                if (Double.compare(dotProduct(deltaV, deltaR), 0) < 0) {
-//                    double d = calculate(deltaV, deltaR, sigma);
-//                    if (Double.compare(d, 0) >= 0) {
-//                        double tc = -(dotProduct(deltaV, deltaR) + Math.sqrt(d)) / dotProduct(deltaV, deltaV);
-//                        double particleJTc = Optional.ofNullable(collisionIndexes.get(particleJ.getId()))
-//                                .map(Collision::getTc).orElse(Double.MAX_VALUE);
-//
-//                        if (Double.compare(minTc, tc) > 0
-//                                && Double.compare(particleITc, tc) > 0
-//                                && Double.compare(particleJTc, tc) > 0) {
-//                            minTc = tc;
-//                            toCollide = particleJ;
-//                        }
-//                    }
-//                }
-//            }
-//            if (toCollide != null) {
-//
-//                if (collisionIndexes.containsKey(toCollide.getId())) {
-//                    collisions.remove(collisionIndexes.get(toCollide.getId()));
-//                    //collisionIndexes.get(toCollide.getId()).setInvalid(true);
-//                }
-//
-//                Collision collision = new Collision(particleI.getId(), toCollide.getId(), minTc);
-//                collisions.add(collision);
-//
-//                collisionIndexes.put(particleI.getId(), collision);
-//                collisionIndexes.put(toCollide.getId(), collision);
-//            }
-//        }
-//    }
-
-    private void analyzeCollision(List<Particle> toAnalyze) {
+    private List<Particle> analyzeCollision(List<Particle> toAnalyze) {
+        List<Particle> pending = new ArrayList<>();
         toAnalyze.forEach(particleI -> {
             Collision possibleCollision = wallCollision(particleI);
 
@@ -199,29 +134,47 @@ public class Space {
                     }
                 }
             }
-//
-//            if (toCollide != null) {
+
+            if (Double.compare(particleITc, minTc) < 0)
+                return;
+
             if (collisionIndexes.containsKey(particleI.getId())) {
-                System.out.println("AAAAAAA");
-                collisions.remove(collisionIndexes.get(particleI.getId()));
+                Optional<Particle> other = removeCollision(particleI.getId());
+                other.ifPresent(pending::add);
             }
-//                    collisionIndexes.get(particleI.getId()).setInvalid(true);
 
-            if (collisionIndexes.containsKey(toCollide))
-                collisions.remove(collisionIndexes.get(toCollide));
-
-//                collisionIndexes.get(toCollide.getId()).setInvalid(true);
+            if (collisionIndexes.containsKey(toCollide)) {
+                Optional<Particle> other = removeCollision(toCollide);
+                other.ifPresent(pending::add);
+            }
 
             Collision collision = new Collision(particleI.getId(), toCollide, minTc);
 
             collisionIndexes.put(particleI.getId(), collision);
-            if (toCollide >= Walls.values().length)
+            if (toCollide >= Walls.values().length) {
                 collisionIndexes.put(toCollide, collision);
+            }
 
             collisions.add(collision);
-//            }
         });
+        
+        return pending;
 
+    }
+
+    private Optional<Particle> removeCollision(long particleId) {
+        Collision toRemove = collisionIndexes.get(particleId);
+        collisions.remove(toRemove);
+        long otherIdx = toRemove.getIndexA();
+        if (otherIdx == particleId)
+            otherIdx = toRemove.getIndexB();
+
+        if (otherIdx < Walls.values().length)
+            return Optional.empty();
+
+        collisionIndexes.remove(otherIdx);
+        Particle other = particleMap.get(otherIdx);
+        return Optional.of(other);
     }
 
     private double getSigma(Particle particleJ, Particle particleI) {

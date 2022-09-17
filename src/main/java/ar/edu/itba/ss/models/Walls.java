@@ -38,7 +38,7 @@ public enum Walls {
         }
     },
 
-    SLIT_TOP(Walls.WIDTH / 2, (Walls.HEIGHT + Walls.SLIT_HEIGHT) / 2) {
+    SLIT_TOP(Walls.WIDTH / 2, Walls.HEIGHT) {
         @Override
         public double getCollisionTime(Particle p) {
             double height = (Walls.HEIGHT - Walls.SLIT_HEIGHT) / 2;
@@ -50,7 +50,7 @@ public enum Walls {
                 double tc = (getX() + p.getRadius() - p.getPosition().getX()) / p.getSpeedX();
                 double yTc = p.getPosition().getY() + p.getSpeedY() * tc;
 
-                if (Double.compare(yTc - p.getRadius(), height) > 0)
+                if (Double.compare(yTc + p.getRadius(), getY() - height) < 0)
                     return Double.MAX_VALUE;
 
                 return tc;
@@ -60,7 +60,7 @@ public enum Walls {
 
                 double tc = (getX() - p.getRadius() - p.getPosition().getX()) / p.getSpeedX();
                 double yTc = p.getPosition().getY() + p.getSpeedY() * tc;
-                if (Double.compare(yTc + p.getRadius(), height) > 0)
+                if (Double.compare(yTc + p.getRadius(), getY() - height) < 0)
                     return Double.MAX_VALUE;
 
                 return tc;
@@ -75,6 +75,8 @@ public enum Walls {
     SLIT_BOTTOM(Walls.WIDTH / 2, 0) {
         @Override
         public double getCollisionTime(Particle p) {
+            double height = (Walls.HEIGHT - Walls.SLIT_HEIGHT) / 2;
+
 
             if (p.getPosition().getX() > getX()) { // Lado derecho
                 if (p.getSpeedX() > 0)
@@ -83,7 +85,7 @@ public enum Walls {
                 double tc = (getX() + p.getRadius() - p.getPosition().getX()) / p.getSpeedX();
                 double yTc = p.getPosition().getY() + p.getSpeedY() * tc;
 
-                if (yTc - p.getRadius() < getY())
+                if (Double.compare(yTc + p.getRadius(), height) > 0)
                     return Double.MAX_VALUE;
 
                 return tc;
@@ -93,7 +95,7 @@ public enum Walls {
 
                 double tc = (getX() - p.getRadius() - p.getPosition().getX()) / p.getSpeedX();
                 double yTc = p.getPosition().getY() + p.getSpeedY() * tc;
-                if (yTc - p.getRadius() < getY())
+                if (Double.compare(yTc + p.getRadius(), height) > 0)
                     return Double.MAX_VALUE;
 
                 return tc;

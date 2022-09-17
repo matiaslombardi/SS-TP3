@@ -46,7 +46,6 @@ public class Particle {
 
 //        System.out.println("Distance " + Math.sqrt(Math.pow(position.getX() - other.getPosition().getX(), 2) + Math.pow(position.getY() - other.getPosition().getY(), 2)));
 //
-//        System.out.println("Speed " + (Math.sqrt(speedX * speedX + speedY * speedY) + Math.sqrt(other.speedX * other.speedX + other.speedY * other.speedY)));
 //        System.out.println("Speed " + Math.sqrt(other.speedX * other.speedX + other.speedY * other.speedY));
 
     }

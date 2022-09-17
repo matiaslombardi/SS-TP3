@@ -13,23 +13,23 @@ public class ParticleGenerator {
                                           double speed, double mass, double radius) {
         List<Particle> particles = new ArrayList<>();
         Point position;
-        boolean isColliding;
+        boolean colliding;
         for (int i = 0; i < totalParticles; i++) {
-
             Particle newParticle = new Particle(speed, mass, radius);
+
             do {
                 position = randomPosition(height, width, radius);
-                isColliding = false;
+                colliding = false;
                 for (Particle p : particles) {
-                    if (Math.pow(position.getX() - p.getPosition().getX(), 2) +
-                            Math.pow(position.getY() - p.getPosition().getY(), 2) <= Math.pow(radius, 2)) {
-                        isColliding = true;
+                    if (isColliding(p.getPosition().getX() - position.getX(), p.getPosition().getY() - position.getY(), radius)) {
+                        colliding = true;
                         break;
                     }
                 }
-            } while (isColliding);
+            } while (colliding);
 
             newParticle.setPosition(position);
+            System.out.println("Particle " + i + " generated at " + position.getX() + ", " + position.getY());
             particles.add(newParticle);
         }
 
@@ -47,9 +47,18 @@ public class ParticleGenerator {
     }
 
     private static Point randomPosition(double height, double width, double radius) {
-        double x = Math.random() * width - radius;
-        double y = Math.random() * height - radius;
+        double x = randomNum(radius, width - radius);
+        double y = randomNum(radius, height - radius);
 
         return new Point(x, y);
+    }
+
+    private static double randomNum(double min, double max) {
+        return min + Math.random() * (max - min);
+    }
+
+    private static boolean isColliding(double deltaX, double deltaY, double radius) {
+        return Double.compare(Math.pow(deltaX, 2) +
+                        Math.pow(deltaY, 2), Math.pow(radius * 2, 2)) < 0;
     }
 }

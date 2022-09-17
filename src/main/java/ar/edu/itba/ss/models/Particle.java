@@ -29,7 +29,7 @@ public class Particle {
     public void collideWithWall(Walls wall) {
         switch (wall) {
             case UP, DOWN -> speedY *= -1;
-            case LEFT, RIGHT -> speedX *= -1;
+            case LEFT, RIGHT, SLIT_TOP, SLIT_BOTTOM -> speedX *= -1;
         }
     }
 

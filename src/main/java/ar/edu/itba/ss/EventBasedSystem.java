@@ -6,6 +6,7 @@ import main.java.ar.edu.itba.ss.utils.ParticleGenerator;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -19,11 +20,11 @@ public class EventBasedSystem {
         }
 
         int particleAmount = Integer.parseInt(args[0]);
-        double fpEpsilon = Double.parseDouble(args[1]);
+//        double fpEpsilon = Double.parseDouble(args[1]);
 
         double speed = 0.01;
         double mass = 1;
-        double radius = 0.015;
+        double radius = 0.0015;
         double height = 0.09;
         double width = 0.24;
         double slit = 0.01;
@@ -35,17 +36,16 @@ public class EventBasedSystem {
 
         try (FileWriter outFile = new FileWriter("out.txt")) {
             for (int i = 0; i < MAX_ITER; i++) {
-                particles = space.getParticleMap().values().stream().toList();//TODO: mirar
+                particles = new ArrayList<>(space.getParticleMap().values());
                 outFile.write(particleAmount + "\n");
                 outFile.write("iter " + i + "\n");
 
                 for (Particle p : particles)
-                    outFile.write(String.format(Locale.ROOT, "%d %f %f\n", p.getId(),
-                            p.getPosition().getX(), p.getPosition().getY()));
+                    outFile.write(String.format(Locale.ROOT, "%d %f %f %f\n", p.getId(),
+                            p.getPosition().getX(), p.getPosition().getY(), radius));
 
-                //space.update();
+                space.computeCollisions();
             }
-//            System.out.println("Iterations: " + iterCount);
         } catch (IOException e) {
             System.out.println(e.getMessage());
             System.exit(1);

@@ -106,7 +106,6 @@ public enum Walls {
          }
      };
 
-                // No deberia darle un radio de changui?
                 if (Double.compare(Math.abs(yTc - height), p.getRadius()) <= 0 ||
                         Double.compare(Math.abs(yTc - ((Walls.HEIGHT + Walls.SLIT_HEIGHT) / 2)),
                                 p.getRadius()) <= 0)
@@ -206,9 +205,9 @@ public enum Walls {
     public final static double HEIGHT = 0.09;
     public final static double WIDTH = 0.24;
     public final static double SLIT_HEIGHT = 0.01;
+
     private final double x;
     private final double y;
-
 
     Walls(double x, double y) {
         this.x = x;

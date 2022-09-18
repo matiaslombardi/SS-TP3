@@ -88,6 +88,7 @@ public class Space {
         particlesToAnalyze.addAll(pending); // TODO: Hacer mejor
         return fp;
     }
+
     private Collision wallCollision(Particle particle) {
         double minTc = Double.MAX_VALUE;
         int ordinal = Walls.LEFT.ordinal();
@@ -105,7 +106,7 @@ public class Space {
 
     private List<Particle> analyzeCollision(List<Particle> toAnalyze) {
         List<Particle> pending = new ArrayList<>();
-        toAnalyze.stream().filter(p -> !p.isStatic()).forEach(particleI -> {
+        toAnalyze.forEach(particleI -> {
             Collision possibleCollision = wallCollision(particleI);
 
             double particleITc = Optional.ofNullable(collisionIndexes.get(particleI.getId()))
@@ -183,25 +184,25 @@ public class Space {
         return Optional.of(other);
     }
 
-    private double getSigma(Particle particleJ, Particle particleI) {
+    public static double getSigma(Particle particleJ, Particle particleI) {
         return particleI.getRadius() + particleJ.getRadius();
     }
 
-    private double[] getDeltaR(Particle particleJ, Particle particleI) {
+    public static double[] getDeltaR(Particle particleJ, Particle particleI) {
         return new double[]{
                 particleJ.getPosition().getX() - particleI.getPosition().getX(),
                 particleJ.getPosition().getY() - particleI.getPosition().getY()
         };
     }
 
-    private double[] getDeltaV(Particle particleJ, Particle particleI) {
+    public static double[] getDeltaV(Particle particleJ, Particle particleI) {
         return new double[]{
                 particleJ.getSpeedX() - particleI.getSpeedX(),
                 particleJ.getSpeedY() - particleI.getSpeedY()
         };
     }
 
-    private double dotProduct(double[] vectorA, double[] vectorB) {
+    public static double dotProduct(double[] vectorA, double[] vectorB) {
         if (vectorA.length != vectorB.length) throw new RuntimeException();
 
         double toRet = 0;

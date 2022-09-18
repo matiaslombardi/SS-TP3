@@ -17,11 +17,6 @@ public class EventBasedSystem {
     final static int MAX_ITER = 10000;
 
     public static void main(String[] args) {
-<<<<<<< HEAD
-        System.out.println("Estoy corriendo");
-=======
-        System.out.println("Running");
->>>>>>> Merge
         if (args.length != 2) {
             System.out.println("Usage: java EventBasedSystem <particle_count> <epsilon>");
             System.exit(1);
@@ -35,28 +30,17 @@ public class EventBasedSystem {
         double radius = 0.0015;
         double height = 0.09;
         double width = 0.24;
-        double slit = 0.01;
+        double slit = 0.01;//0.01;
 
         List<Particle> particles = ParticleGenerator.generate("static.txt", particleAmount,
                 height, width / 2, speed, mass, radius);
-
-        double borderHeight = (Walls.HEIGHT - Walls.SLIT_HEIGHT) / 2;
-
-        Particle slitParticle = new Particle(0, mass * 1000, 0, true);
-        slitParticle.setPosition(new Point(width / 2, borderHeight));
-        particles.add(slitParticle);
-
-        slitParticle = new Particle(0, mass * 1000, 0, true);
-        slitParticle.setPosition(new Point(width / 2, Walls.HEIGHT - borderHeight));
-        particles.add(slitParticle);
 
         Space space = new Space(height, width, slit, particles);
 
         try (FileWriter outFile = new FileWriter("out.txt")) {
             double fp = 1;
             for (int i = 0; i < MAX_ITER && Double.compare(Math.abs(fp - 0.5), fpEpsilon) > 0; i++) {
-                particles = space.getParticleMap().values().stream()
-                        .filter(p -> !p.isStatic()).collect(Collectors.toList());
+                particles = new ArrayList<>(space.getParticleMap().values());
 
                 outFile.write(particleAmount + "\n");
                 outFile.write("iter " + i + "\n");

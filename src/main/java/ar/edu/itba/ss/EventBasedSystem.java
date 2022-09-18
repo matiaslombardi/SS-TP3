@@ -17,7 +17,11 @@ public class EventBasedSystem {
     final static int MAX_ITER = 10000;
 
     public static void main(String[] args) {
+<<<<<<< HEAD
+        System.out.println("Estoy corriendo");
+=======
         System.out.println("Running");
+>>>>>>> Merge
         if (args.length != 2) {
             System.out.println("Usage: java EventBasedSystem <particle_count> <epsilon>");
             System.exit(1);

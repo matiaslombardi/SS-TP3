@@ -28,15 +28,21 @@ public class Space {
 //        lastCollision = null;
     }
 
-    private void evolveState() {
+    private double evolveState() {
         Collision firstCollision = collisions.poll();
         if (firstCollision == null)
-            return; // TODO capaz terminar la ejecucion con thr
+            throw new IllegalStateException("No collisions");
 
 //        lastCollision = firstCollision;
         // get ids y si coincide en forEach, actualizar los angulos y velocidades
-        for (Particle particle : particleMap.values())
+        double fp;
+        long leftSide = 0;
+        for (Particle particle : particleMap.values()) {
             particle.updatePosition(firstCollision.getTc());
+            if (particle.getPosition().getX() < 0.12) //
+                leftSide++;
+        }
+        fp = (double) leftSide / particleMap.size();
 
         long indexA = firstCollision.getIndexA();
         long indexB = firstCollision.getIndexB();
@@ -65,9 +71,11 @@ public class Space {
 
         for (Collision collision : collisions)
             collision.updateTc(firstCollision.getTc());
+
+        return fp;
     }
 
-    public void computeCollisions() {
+    public double computeCollisions() {
         List<Particle> toAnalyze;
         if (firstIter) {
             toAnalyze = new ArrayList<>(particleMap.values());
@@ -77,8 +85,9 @@ public class Space {
         }
 
         List<Particle> pending = analyzeCollision(toAnalyze);
-        evolveState();
+        double fp = evolveState();
         particlesToAnalyze.addAll(pending); // TODO: Hacer mejor
+        return fp;
     }
     private Collision wallCollision(Particle particle) {
         double minTc = Double.MAX_VALUE;
@@ -97,7 +106,7 @@ public class Space {
 
     private List<Particle> analyzeCollision(List<Particle> toAnalyze) {
         List<Particle> pending = new ArrayList<>();
-        toAnalyze.forEach(particleI -> {
+        toAnalyze.stream().filter(p -> !p.isStatic()).forEach(particleI -> {
             Collision possibleCollision = wallCollision(particleI);
 
             double particleITc = Optional.ofNullable(collisionIndexes.get(particleI.getId()))

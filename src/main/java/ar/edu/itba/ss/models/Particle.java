@@ -10,14 +10,20 @@ public class Particle {
     private double speedY;
     private final double mass;
     private final double radius;
+    private final boolean isStatic;
 
     public Particle(double speed, double mass, double radius) {
+        this(speed, mass, radius, false);
+    }
+
+    public Particle(double speed, double mass, double radius, boolean isStatic) {
         this.id = SEQ++;
         double direction = Math.random() * 2 * Math.PI;
         this.speedX = speed * Math.cos(direction);
         this.speedY = speed * Math.sin(direction);
         this.mass = mass;
         this.radius = radius;
+        this.isStatic = isStatic;
     }
 
     public void updatePosition(double tc) {
@@ -30,19 +36,23 @@ public class Particle {
         switch (wall) {
             case UP, DOWN -> speedY *= -1;
             case LEFT, RIGHT, SLIT_TOP, SLIT_BOTTOM -> speedX *= -1;
+            // case SLIT_BORDER -> collideWithParticle(new Particle());
         }
     }
 
     public void collideWithParticle(Particle other, double delta, double sigma) {
-        double j = delta / sigma;
+        double j = (2 * mass * other.getMass() * delta) / (sigma * (mass + other.getMass()));
         double jx = (j * (position.getX() - other.getPosition().getX())) / sigma;
         double jy = (j * (position.getY() - other.getPosition().getY())) / sigma;
 
-        speedX -= jx;
-        speedY -= jy;
+        speedX -= jx / mass;
+        speedY -= jy / mass;
 
-        other.speedX += jx;
-        other.speedY += jy;
+
+        if (!other.isStatic) {
+            other.speedX += jx / other.getMass();
+            other.speedY += jy / other.getMass();
+        }
 
 //        System.out.println("Distance " + Math.sqrt(Math.pow(position.getX() - other.getPosition().getX(), 2) + Math.pow(position.getY() - other.getPosition().getY(), 2)));
 //
@@ -94,5 +104,9 @@ public class Particle {
 
     public double getRadius() {
         return radius;
+    }
+
+    public boolean isStatic() {
+        return isStatic;
     }
 }

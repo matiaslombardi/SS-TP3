@@ -38,121 +38,76 @@ public enum Walls {
         }
     },
 
-    SLIT_TOP(Walls.WIDTH / 2, Walls.HEIGHT) {
-        @Override
-        public double getCollisionTime(Particle p) {
-            double height = (Walls.HEIGHT - Walls.SLIT_HEIGHT) / 2;
-            if (Double.compare(p.getPosition().getX(), getX()) > 0) { // Lado derecho
-                if (p.getSpeedX() > 0)
-                    return Double.MAX_VALUE;
+     SLIT_TOP(Walls.WIDTH / 2, Walls.HEIGHT) {
+         @Override
+         public double getCollisionTime(Particle p) {
+             double height = (Walls.HEIGHT - Walls.SLIT_HEIGHT) / 2;
 
-                double tc = (getX() + p.getRadius() - p.getPosition().getX()) / p.getSpeedX();
-                double yTc = p.getPosition().getY() + p.getSpeedY() * tc;
+             if (Double.compare(p.getPosition().getX(), getX()) > 0) { // Lado derecho
+                 if (p.getSpeedX() > 0)
+                     return Double.MAX_VALUE;
 
-                if (Double.compare(yTc + p.getRadius(), getY() - height) < 0)
-                    return Double.MAX_VALUE;
+                 double tc = (getX() + p.getRadius() - p.getPosition().getX()) / p.getSpeedX();
+                 double yTc = p.getPosition().getY() + p.getSpeedY() * tc;
 
-                return tc;
-            } else if (Double.compare(p.getPosition().getX(), getX()) < 0) { // Lado izquierdo
-                if (p.getSpeedX() < 0)
-                    return Double.MAX_VALUE;
+                 // y + radio - HEIGHT / 2 + SLIT / 2
+                 if (Double.compare(yTc + p.getRadius(), getY() - height) <= 0)
+                     return Double.MAX_VALUE;
 
-                double tc = (getX() - p.getRadius() - p.getPosition().getX()) / p.getSpeedX();
-                double yTc = p.getPosition().getY() + p.getSpeedY() * tc;
-                if (Double.compare(yTc + p.getRadius(), getY() - height) < 0)
-                    return Double.MAX_VALUE;
-                return tc;
-            } else { // Centro
-                return Double.MAX_VALUE;
-            }
-        }
-    },
-    //TODO: checkear si height 0 es arriba
-    SLIT_BOTTOM(Walls.WIDTH / 2, 0) {
-        @Override
-        public double getCollisionTime(Particle p) {
-            double height = (Walls.HEIGHT - Walls.SLIT_HEIGHT) / 2;
+                 return tc;
+             } else if (Double.compare(p.getPosition().getX(), getX()) < 0) { // Lado izquierdo
+                 if (p.getSpeedX() < 0)
+                     return Double.MAX_VALUE;
 
-            if (p.getPosition().getX() > getX()) { // Lado derecho
-                if (p.getSpeedX() > 0)
-                    return Double.MAX_VALUE;
+                 double tc = (getX() - p.getRadius() - p.getPosition().getX()) / p.getSpeedX();
+                 double yTc = p.getPosition().getY() + p.getSpeedY() * tc;
+                 if (Double.compare(yTc + p.getRadius(), getY() - height) <= 0)
+                     return Double.MAX_VALUE;
+                 return tc;
+             }// Centro
 
-                double tc = (getX() + p.getRadius() - p.getPosition().getX()) / p.getSpeedX();
-                double yTc = p.getPosition().getY() + p.getSpeedY() * tc;
+             return Double.MAX_VALUE;
+         }
+     },
+     SLIT_BOTTOM(Walls.WIDTH / 2, 0) {
+         @Override
+         public double getCollisionTime(Particle p) {
+             double height = (Walls.HEIGHT - Walls.SLIT_HEIGHT) / 2;
 
-                if (Double.compare(yTc + p.getRadius(), height) > 0)
-                    return Double.MAX_VALUE;
+             if (p.getPosition().getX() > getX()) { // Lado derecho
+                 if (p.getSpeedX() > 0)
+                     return Double.MAX_VALUE;
 
-                return tc;
-            } else if (p.getPosition().getX() < getX()) { // Lado izquierdo
-                if (p.getSpeedX() < 0)
-                    return Double.MAX_VALUE;
+                 double tc = (getX() + p.getRadius() - p.getPosition().getX()) / p.getSpeedX();
+                 double yTc = p.getPosition().getY() + p.getSpeedY() * tc;
 
-                double tc = (getX() - p.getRadius() - p.getPosition().getX()) / p.getSpeedX();
-                double yTc = p.getPosition().getY() + p.getSpeedY() * tc;
-                if (Double.compare(yTc + p.getRadius(), height) > 0)
-                    return Double.MAX_VALUE;
+                 // y + radio - (HEIGHT / 2 - SLIT / 2)
+                 if (Double.compare(yTc - p.getRadius(), height) >= 0)
+                     return Double.MAX_VALUE;
 
-                return tc;
-            } else { // Centro
-                return Double.MAX_VALUE;
-            }
-        }
-    },
-    SLIT_BORDER(Walls.WIDTH / 2, 0) {
-        @Override
-        public double getCollisionTime(Particle p) {
-            double height = (Walls.HEIGHT - Walls.SLIT_HEIGHT) / 2;
+                 return tc;
+             } else if (p.getPosition().getX() < getX()) { // Lado izquierdo
+                 if (p.getSpeedX() < 0)
+                     return Double.MAX_VALUE;
 
-            if (Double.compare(p.getPosition().getX(), getX()) > 0) { // Lado derecho
-                if (p.getSpeedX() > 0)
-                    return Double.MAX_VALUE;
+                 double tc = (getX() - p.getRadius() - p.getPosition().getX()) / p.getSpeedX();
+                 double yTc = p.getPosition().getY() + p.getSpeedY() * tc;
+                 if (Double.compare(yTc - p.getRadius(), height) >= 0)
+                     return Double.MAX_VALUE;
 
-                double tc = (getX() + p.getRadius() - p.getPosition().getX()) / p.getSpeedX();
-                double yTc = p.getPosition().getY() + p.getSpeedY() * tc;
+                 return tc;
+             }
 
-//                if (Double.compare(yTc + p.getRadius(), getY() - height) == 0 ||
-//                        Double.compare(yTc + p.getRadius(), getY() - (Walls.HEIGHT - height)) == 0)
-//                    return tc;
-
-                // No deberia darle un radio de changui?
-                if (Double.compare(Math.abs(yTc - height), p.getRadius()) <= 0 ||
-                        Double.compare(Math.abs(yTc - ((Walls.HEIGHT + Walls.SLIT_HEIGHT) / 2)),
-                                p.getRadius()) <= 0)
-                    return tc;
-
-                return Double.MAX_VALUE;
-            } else if (Double.compare(p.getPosition().getX(), getX()) < 0) { // Lado izquierdo
-                if (p.getSpeedX() < 0)
-                    return Double.MAX_VALUE;
-
-                double tc = (getX() - p.getRadius() - p.getPosition().getX()) / p.getSpeedX();
-                double yTc = p.getPosition().getY() + p.getSpeedY() * tc;
-                if (Double.compare(Math.abs(yTc - height), p.getRadius()) <= 0 ||
-                        Double.compare(Math.abs(yTc - ((Walls.HEIGHT + Walls.SLIT_HEIGHT) / 2)), p.getRadius()) <= 0)
-                    return tc;
-
-                return Double.MAX_VALUE;
-            }
-
-            if (Double.compare(p.getSpeedX(), 0) == 0) {
-                if (p.getSpeedY() > 0) {
-                    return ((Walls.HEIGHT - height) - p.getRadius() - p.getPosition().getY()) / p.getSpeedY();
-                }
-
-                return (height + p.getRadius() - p.getPosition().getY()) / p.getSpeedY();
-            }
-
-            return Double.MAX_VALUE;
-        }
-    };
+             return Double.MAX_VALUE;
+         }
+     };
 
     public final static double HEIGHT = 0.09;
     public final static double WIDTH = 0.24;
     public final static double SLIT_HEIGHT = 0.01;
-
     private final double x;
     private final double y;
+
 
     Walls(double x, double y) {
         this.x = x;

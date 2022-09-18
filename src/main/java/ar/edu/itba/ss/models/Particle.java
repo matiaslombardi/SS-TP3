@@ -1,6 +1,5 @@
 package main.java.ar.edu.itba.ss.models;
 
-import javax.swing.text.Position;
 import java.util.Objects;
 
 public class Particle {
@@ -11,14 +10,20 @@ public class Particle {
     private double speedY;
     private final double mass;
     private final double radius;
+    private final boolean isStatic;
 
     public Particle(double speed, double mass, double radius) {
+        this(speed, mass, radius, false);
+    }
+
+    public Particle(double speed, double mass, double radius, boolean isStatic) {
         this.id = SEQ++;
         double direction = Math.random() * 2 * Math.PI;
         this.speedX = speed * Math.cos(direction);
         this.speedY = speed * Math.sin(direction);
         this.mass = mass;
         this.radius = radius;
+        this.isStatic = isStatic;
     }
 
     public void updatePosition(double tc) {
@@ -29,37 +34,26 @@ public class Particle {
 
     public void collideWithWall(Walls wall) {
         switch (wall) {
-            case UP:
-            case DOWN:
-                speedY *= -1;
-                break;
-            case LEFT:
-            case RIGHT:
-            case SLIT_TOP:
-            case SLIT_BOTTOM:
-                speedX *= -1;
-                break;
-            case SLIT_BORDER:
-                
-                Particle slitParticle = new Particle(0, mass*1000, 0);
-                double h = (Walls.HEIGHT - Walls.SLIT_HEIGHT) / 2;
-                Point pos = new Point(Walls.WIDTH / 2, h);
-                if (getPosition().getY() > Walls.HEIGHT / 2) {
-                    pos.setY(Walls.HEIGHT - h);
-                }
-                slitParticle.setPosition(pos);
-
-                double[] deltaR = Space.getDeltaR(this, slitParticle);
-                double[] deltaV = Space.getDeltaV(this, slitParticle);
-
-                double sigma = Space.getSigma(this, slitParticle);
-                collideWithParticle(slitParticle, Space.dotProduct(deltaV, deltaR), sigma);
-                break;
-
+            case UP, DOWN -> speedY *= -1;
+            case LEFT, RIGHT, SLIT_TOP, SLIT_BOTTOM -> speedX *= -1;
+            // case SLIT_BORDER -> collideWithParticle(new Particle());
         }
     }
 
     public void collideWithParticle(Particle other, double delta, double sigma) {
+//        if (other.isStatic) {
+//            double angle = Math.atan2(-getSpeedY(), -speedX);  // - because angle is from obstacle towards particle
+//            double angleCos = Math.cos(angle);
+//            double angleSen = Math.sin(angle);
+//            double[][] collisionOp = {
+//                    {-angleCos*angleCos + angleSen*angleSen, -2*angleSen*angleCos},
+//                    {-2*angleSen*angleCos, -angleSen*angleSen + angleCos*angleCos}
+//            };
+//
+//            speedX = collisionOp[0][0] * getSpeedX() + collisionOp[0][1] * getSpeedY();
+//            speedY = collisionOp[1][0] * getSpeedX() + collisionOp[1][1] * getSpeedY();
+//            return;
+//        }
         double j = (2 * mass * other.getMass() * delta) / (sigma * (mass + other.getMass()));
         double jx = (j * (position.getX() - other.getPosition().getX())) / sigma;
         double jy = (j * (position.getY() - other.getPosition().getY())) / sigma;
@@ -67,14 +61,14 @@ public class Particle {
         speedX -= jx / mass;
         speedY -= jy / mass;
 
+        if (!other.isStatic) {
+            other.speedX += jx / other.getMass();
+            other.speedY += jy / other.getMass();
+        }
 
-        other.speedX += jx / other.getMass();
-        other.speedY += jy / other.getMass();
-
-
-        System.out.println("Distance " + Math.sqrt(Math.pow(position.getX() - other.getPosition().getX(), 2) + Math.pow(position.getY() - other.getPosition().getY(), 2)));
-
-        System.out.println("Speed " + Math.sqrt(other.speedX * other.speedX + other.speedY * other.speedY));
+//        System.out.println("Distance " + Math.sqrt(Math.pow(position.getX() - other.getPosition().getX(), 2) + Math.pow(position.getY() - other.getPosition().getY(), 2)));
+//
+//        System.out.println("Speed " + Math.sqrt(other.speedX * other.speedX + other.speedY * other.speedY));
 
     }
 
@@ -124,4 +118,7 @@ public class Particle {
         return radius;
     }
 
+    public boolean isStatic() {
+        return isStatic;
+    }
 }

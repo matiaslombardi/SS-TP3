@@ -14,9 +14,10 @@ import java.util.Locale;
 import java.util.stream.Collectors;
 
 public class EventBasedSystem {
-    final static int MAX_ITER = 1000;
+    final static int MAX_ITER = 10000;
 
     public static void main(String[] args) {
+        System.out.println("Running");
         if (args.length != 2) {
             System.out.println("Usage: java EventBasedSystem <particle_count> <epsilon>");
             System.exit(1);
@@ -49,7 +50,6 @@ public class EventBasedSystem {
 
         try (FileWriter outFile = new FileWriter("out.txt")) {
             double fp = 1;
-            // Math.abs (d1 - d2) < epsilon
             for (int i = 0; i < MAX_ITER && Double.compare(Math.abs(fp - 0.5), fpEpsilon) > 0; i++) {
                 particles = space.getParticleMap().values().stream()
                         .filter(p -> !p.isStatic()).collect(Collectors.toList());
@@ -62,9 +62,9 @@ public class EventBasedSystem {
                             p.getPosition().getX(), p.getPosition().getY(), radius)); //TODO: ver que devolvemos.
                 }
 
-                space.computeCollisions(); // TODO: Catchear la excepción
+                fp = space.computeCollisions();
             }
-        } catch (IOException e) {
+        } catch (IOException | IllegalArgumentException e) {
             System.out.println(e.getMessage());
             System.exit(1);
         }

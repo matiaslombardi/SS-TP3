@@ -25,7 +25,6 @@ public class Space {
         this.collisions = new PriorityQueue<>();
         collisionIndexes = new HashMap<>();
         firstIter = true;
-//        lastCollision = null;
     }
 
     private double evolveState() {
@@ -33,16 +32,16 @@ public class Space {
         if (firstCollision == null)
             throw new IllegalStateException("No collisions");
 
-//        lastCollision = firstCollision;
         // get ids y si coincide en forEach, actualizar los angulos y velocidades
         double fp;
         long leftSide = 0;
-        for (Particle particle : particleMap.values()) {
+        for (Particle particle : particleMap.values().stream().filter(p -> !p.isStatic()).collect(Collectors.toList())) {
             particle.updatePosition(firstCollision.getTc());
-            if (particle.getPosition().getX() < 0.12) //
+            if (particle.getPosition().getX() < Walls.WIDTH / 2) //
                 leftSide++;
         }
-        fp = (double) leftSide / particleMap.size();
+        fp = (double) leftSide / (particleMap.size() - 2);
+        //System.out.println(fp);
 
         long indexA = firstCollision.getIndexA();
         long indexB = firstCollision.getIndexB();
@@ -95,7 +94,7 @@ public class Space {
 
         for (Walls wall : Walls.values()) {
             double tc = wall.getCollisionTime(particle);
-            if (Double.compare(tc, minTc) < 0) {
+            if (tc >= 0 && Double.compare(tc, minTc) < 0) { // TODO: parche
                 minTc = tc;
                 ordinal = wall.ordinal();
             }
@@ -160,15 +159,13 @@ public class Space {
             Collision collision = new Collision(particleI.getId(), toCollide, minTc);
 
             collisionIndexes.put(particleI.getId(), collision);
-            if (toCollide >= Walls.values().length) {
+            if (toCollide >= Walls.values().length)
                 collisionIndexes.put(toCollide, collision);
-            }
 
             collisions.add(collision);
         });
         
         return pending;
-
     }
 
     private Optional<Particle> removeCollision(long particleId) {
@@ -181,8 +178,8 @@ public class Space {
         if (otherIdx < Walls.values().length)
             return Optional.empty();
 
-        collisionIndexes.remove(otherIdx);
         Particle other = particleMap.get(otherIdx);
+        collisionIndexes.remove(otherIdx);
         return Optional.of(other);
     }
 

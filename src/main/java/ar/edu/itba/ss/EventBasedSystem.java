@@ -1,9 +1,6 @@
 package main.java.ar.edu.itba.ss;
 
-import main.java.ar.edu.itba.ss.models.Particle;
-import main.java.ar.edu.itba.ss.models.Point;
-import main.java.ar.edu.itba.ss.models.Space;
-import main.java.ar.edu.itba.ss.models.Walls;
+import main.java.ar.edu.itba.ss.models.*;
 import main.java.ar.edu.itba.ss.utils.ParticleGenerator;
 
 import java.io.FileWriter;
@@ -14,8 +11,6 @@ import java.util.Locale;
 import java.util.stream.Collectors;
 
 public class EventBasedSystem {
-    final static int MAX_ITER = 10000;
-
     public static void main(String[] args) {
         System.out.println("Running");
         if (args.length != 2) {
@@ -48,22 +43,40 @@ public class EventBasedSystem {
 
         Space space = new Space(height, width, slit, particles);
 
+        double eqTime = 0;
+        boolean foundEq = false;
+        int stopIter = 0;
         try (FileWriter outFile = new FileWriter("out.txt")) {
-            double fp = 1;
-            for (int i = 0; i < MAX_ITER && Double.compare(Math.abs(fp - 0.5), fpEpsilon) > 0; i++) {
+            double fp;
+            for (int i = 0; i < stopIter || !foundEq; i++) {
                 particles = space.getParticleMap().values().stream()
                         .filter(p -> !p.isStatic()).collect(Collectors.toList());
 
                 outFile.write(particleAmount + "\n");
                 outFile.write("iter " + i + "\n");
 
+                Collision lastCollision = space.getLastCollision();
+
+                if (lastCollision != null) {
+                    boolean wallCollision = lastCollision.getIndexB() < Walls.values().length;
+                    outFile.write(String.format("%b %d %d\n", wallCollision, lastCollision.getIndexA(), lastCollision.getIndexB()));
+                }
+
                 for (Particle p : particles) {
-                    outFile.write(String.format(Locale.ROOT, "%d %f %f %f\n", p.getId(),
-                            p.getPosition().getX(), p.getPosition().getY(), radius)); //TODO: ver que devolvemos.
+                    outFile.write(String.format(Locale.ROOT, "%d %f %f %f %f %f\n", p.getId(),
+                            p.getPosition().getX(), p.getPosition().getY(), p.getSpeedX(), p.getSpeedY(), radius));
                 }
 
                 fp = space.computeCollisions();
+
+                if ( !foundEq && Double.compare(Math.abs(fp - 0.5), fpEpsilon) <= 0 ) {
+                    eqTime = space.getElapsedTime();
+                    foundEq = true;
+                    stopIter = i + 1000;
+                }
             }
+
+            outFile.write(String.format("%f %f\n", eqTime, space.getElapsedTime()));
         } catch (IOException | IllegalArgumentException e) {
             System.out.println(e.getMessage());
             System.exit(1);

@@ -36,24 +36,11 @@ public class Particle {
         switch (wall) {
             case UP, DOWN -> speedY *= -1;
             case LEFT, RIGHT, SLIT_TOP, SLIT_BOTTOM -> speedX *= -1;
-            // case SLIT_BORDER -> collideWithParticle(new Particle());
         }
     }
 
     public void collideWithParticle(Particle other, double delta, double sigma) {
-//        if (other.isStatic) {
-//            double angle = Math.atan2(-getSpeedY(), -speedX);  // - because angle is from obstacle towards particle
-//            double angleCos = Math.cos(angle);
-//            double angleSen = Math.sin(angle);
-//            double[][] collisionOp = {
-//                    {-angleCos*angleCos + angleSen*angleSen, -2*angleSen*angleCos},
-//                    {-2*angleSen*angleCos, -angleSen*angleSen + angleCos*angleCos}
-//            };
-//
-//            speedX = collisionOp[0][0] * getSpeedX() + collisionOp[0][1] * getSpeedY();
-//            speedY = collisionOp[1][0] * getSpeedX() + collisionOp[1][1] * getSpeedY();
-//            return;
-//        }
+
         double j = (2 * mass * other.getMass() * delta) / (sigma * (mass + other.getMass()));
         double jx = (j * (position.getX() - other.getPosition().getX())) / sigma;
         double jy = (j * (position.getY() - other.getPosition().getY())) / sigma;

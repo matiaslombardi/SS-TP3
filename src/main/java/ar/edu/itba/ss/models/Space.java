@@ -13,7 +13,8 @@ public class Space {
 
 
     private boolean firstIter;
-//    private Collision lastCollision;
+    private double elapsedTime;
+    private Collision lastCollision;
     private final List<Particle> particlesToAnalyze = new ArrayList<>();
 
     public Space(double height, double width, double slitSize, List<Particle> particles) {
@@ -25,6 +26,7 @@ public class Space {
         this.collisions = new PriorityQueue<>();
         collisionIndexes = new HashMap<>();
         firstIter = true;
+        elapsedTime = 0;
     }
 
     private double evolveState() {
@@ -32,7 +34,10 @@ public class Space {
         if (firstCollision == null)
             throw new IllegalStateException("No collisions");
 
-        // get ids y si coincide en forEach, actualizar los angulos y velocidades
+        this.lastCollision = firstCollision;
+
+        elapsedTime += firstCollision.getTc();
+
         double fp;
         long leftSide = 0;
         for (Particle particle : particleMap.values().stream().filter(p -> !p.isStatic()).collect(Collectors.toList())) {
@@ -219,5 +224,14 @@ public class Space {
 
     public Map<Long, Particle> getParticleMap() {
         return particleMap;
+    }
+
+
+    public double getElapsedTime() {
+        return elapsedTime;
+    }
+
+    public Collision getLastCollision() {
+        return lastCollision;
     }
 }

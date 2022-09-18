@@ -34,8 +34,8 @@ public class ParticleGenerator {
         //TODO: imprimimos a archivo las particulas
         try (FileWriter writer = new FileWriter(staticFile)) {
             writer.write(totalParticles + "\n");
-            writer.write("Space width" + width + "\n");
-            writer.write("Space height" + height + "\n");
+            writer.write("Space width " + width + "\n");
+            writer.write("Space height " + height + "\n");
         } catch (IOException e) {
             System.out.println(e.getMessage());
             System.exit(1);

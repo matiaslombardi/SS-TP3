@@ -7,6 +7,7 @@ with open("./fps.txt", "a") as fps_file:
         line = out_file.readline()
         while line:
             if len(line.split(" ")) == 2:
+                print(line)
                 break
 
             particle_count = int(line);

@@ -14,16 +14,16 @@ import java.util.stream.Collectors;
 public class EventBasedSystem {
     public static void main(String[] args) {
         System.out.println("Running");
-        if (args.length != 3) {
-            System.out.println("Usage: java EventBasedSystem <particle_count> <slit> <epsilon>");
+        if (args.length != 4) {
+            System.out.println("Usage: java EventBasedSystem <particle_count> <slit> <speed> <epsilon>");
             System.exit(1);
         }
 
         int particleAmount = Integer.parseInt(args[0]);
         double slit = Double.parseDouble(args[1]);
-        double fpEpsilon = Double.parseDouble(args[2]);
+        double speed = Double.parseDouble(args[2]);
+        double fpEpsilon = Double.parseDouble(args[3]);
 
-        double speed = 0.01;
         double mass = 1;
         double radius = 0.0015;
         double height = 0.09;
@@ -78,7 +78,7 @@ public class EventBasedSystem {
                 if (!foundEq && Double.compare(Math.abs(fp - 0.5), fpEpsilon) <= 0) {
                     eqTime = space.getElapsedTime();
                     foundEq = true;
-                    stopIter = i + 1000;
+                    stopIter = i + 10000;
                 }
             }
 

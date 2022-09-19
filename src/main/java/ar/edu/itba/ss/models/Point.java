@@ -9,10 +9,6 @@ public class Point {
         this.y = y;
     }
 
-    public double distanceTo(Point other, double spaceSize, int gridM) {
-        return Math.sqrt(Math.pow(x - other.getX(), 2) + Math.pow(y - other.getY(), 2));
-    }
-
     public void move(double dx, double dy) {
         this.x = this.x + dx;
         this.y = this.y + dy;
@@ -22,15 +18,7 @@ public class Point {
         return x;
     }
 
-    public void setX(double x) {
-        this.x = x;
-    }
-
     public double getY() {
         return y;
-    }
-
-    public void setY(double y) {
-        this.y = y;
     }
 }

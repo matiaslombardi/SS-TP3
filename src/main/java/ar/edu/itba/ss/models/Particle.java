@@ -3,7 +3,7 @@ package main.java.ar.edu.itba.ss.models;
 import java.util.Objects;
 
 public class Particle {
-    private static long SEQ = Walls.values().length;//0;
+    private static long SEQ = Walls.values().length;
     private Point position;
     private final long id;
     private double speedX;
@@ -52,11 +52,6 @@ public class Particle {
             other.speedX += jx / other.getMass();
             other.speedY += jy / other.getMass();
         }
-
-//        System.out.println("Distance " + Math.sqrt(Math.pow(position.getX() - other.getPosition().getX(), 2) + Math.pow(position.getY() - other.getPosition().getY(), 2)));
-//
-//        System.out.println("Speed " + Math.sqrt(other.speedX * other.speedX + other.speedY * other.speedY));
-
     }
 
     public Point getPosition() {

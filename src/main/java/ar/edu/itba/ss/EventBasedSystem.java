@@ -1,6 +1,7 @@
 package main.java.ar.edu.itba.ss;
 
 import main.java.ar.edu.itba.ss.models.*;
+import main.java.ar.edu.itba.ss.utils.Configuration;
 import main.java.ar.edu.itba.ss.utils.ParticleGenerator;
 
 import java.io.FileWriter;
@@ -31,14 +32,18 @@ public class EventBasedSystem {
         List<Particle> particles = ParticleGenerator.generate("static.txt", particleAmount,
                 height, width / 2, speed, mass, radius);
 
-        double borderHeight = (Walls.HEIGHT - Walls.SLIT_HEIGHT) / 2;
+        Configuration.setHeight(height);
+        Configuration.setWidth(width);
+        Configuration.setSlitHeight(slit);
+
+        double borderHeight = (Configuration.height - Configuration.slitHeight) / 2;
 
         Particle slitParticle = new Particle(0, mass * 1000, 0, true);
         slitParticle.setPosition(new Point(width / 2, borderHeight));
         particles.add(slitParticle);
 
         slitParticle = new Particle(0, mass * 1000, 0, true);
-        slitParticle.setPosition(new Point(width / 2, Walls.HEIGHT - borderHeight));
+        slitParticle.setPosition(new Point(width / 2, Configuration.height - borderHeight));
         particles.add(slitParticle);
 
         Space space = new Space(height, width, slit, particles);

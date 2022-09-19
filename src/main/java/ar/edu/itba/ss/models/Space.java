@@ -1,5 +1,7 @@
 package main.java.ar.edu.itba.ss.models;
 
+import main.java.ar.edu.itba.ss.utils.Configuration;
+
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -42,7 +44,7 @@ public class Space {
         long leftSide = 0;
         for (Particle particle : particleMap.values().stream().filter(p -> !p.isStatic()).collect(Collectors.toList())) {
             particle.updatePosition(firstCollision.getTc());
-            if (particle.getPosition().getX() < Walls.WIDTH / 2) //
+            if (particle.getPosition().getX() < Configuration.width / 2) //
                 leftSide++;
         }
         fp = (double) leftSide / (particleMap.size() - 2);
@@ -99,7 +101,7 @@ public class Space {
 
         for (Walls wall : Walls.values()) {
             double tc = wall.getCollisionTime(particle);
-            if (tc >= 0 && Double.compare(tc, minTc) < 0) { // TODO: parche
+            if (tc >= 0 && Double.compare(tc, minTc) < 0) {
                 minTc = tc;
                 ordinal = wall.ordinal();
             }

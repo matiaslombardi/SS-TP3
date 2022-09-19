@@ -59,17 +59,18 @@ public class EventBasedSystem {
 
                 if (lastCollision != null) {
                     boolean wallCollision = lastCollision.getIndexB() < Walls.values().length;
-                    outFile.write(String.format("%b %d %d\n", wallCollision, lastCollision.getIndexA(), lastCollision.getIndexB()));
-                }
+                    outFile.write(String.format("%b %d %d %f\n", wallCollision, lastCollision.getIndexA(), lastCollision.getIndexB(), lastCollision.getTc()));
+                } else
+                    outFile.write("\n");
 
                 for (Particle p : particles) {
-                    outFile.write(String.format(Locale.ROOT, "%d %f %f %f %f %f\n", p.getId(),
-                            p.getPosition().getX(), p.getPosition().getY(), p.getSpeedX(), p.getSpeedY(), radius));
+                    outFile.write(String.format(Locale.ROOT, "%d %f %f %f %f %f %f\n", p.getId(),
+                            p.getPosition().getX(), p.getPosition().getY(), p.getSpeedX(), p.getSpeedY(), mass, radius));
                 }
 
                 fp = space.computeCollisions();
 
-                if ( !foundEq && Double.compare(Math.abs(fp - 0.5), fpEpsilon) <= 0 ) {
+                if (!foundEq && Double.compare(Math.abs(fp - 0.5), fpEpsilon) <= 0) {
                     eqTime = space.getElapsedTime();
                     foundEq = true;
                     stopIter = i + 1000;

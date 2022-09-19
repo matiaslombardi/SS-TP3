@@ -10,7 +10,7 @@ with open("pvt.txt", "r") as pvt_file:
         pressures.append(pressure)
         energies.append(energy)
         line = line.strip('\n')
-        plt.annotate(f"v = {line}m/s", (energy, pressure + 5))
+        plt.annotate(f"v = {line}m/s", (energy + 0.000005, pressure - 0.1))
 
         line = pvt_file.readline()
 
@@ -20,7 +20,7 @@ plt.plot([energies[0], energies[2]], [pressures[0], pressures[2]], color='blue',
 
 plt.scatter(energies, pressures)
 
-plt.xticks(np.arange(0, max(energies) + 0.01, 0.005))
+plt.xticks(np.arange(0, max(energies) + 0.0001, 0.0001))
 plt.xlabel("Kinetic Energy (J)")
 plt.ylabel("Pressure (N/m)")
 

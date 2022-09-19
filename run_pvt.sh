@@ -2,7 +2,7 @@
 
 N=100
 SLIT_SIZE=0.02
-V=(0.1 0.2 0.3)
+V=(0.01 0.02 0.03)
 
 rm graphics/pvt.txt
 

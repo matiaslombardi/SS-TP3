@@ -39,7 +39,7 @@ plt.plot(x, errors)
 # truncate to 6 decimal places
 min_err = math.floor(min_err * 1000000) / 1000000
 
-plt.annotate(f"({min_c}; {min_err})", (min_c - 12, min_err + 0.6))
+plt.annotate(f"({min_c}; {min_err})", (min_c - 13, min_err + 0.0001))
 
 plt.ylabel("Error")
 plt.xlabel("c")

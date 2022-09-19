@@ -1,9 +1,8 @@
 package main.java.ar.edu.itba.ss.models;
 
 public class Collision implements Comparable<Collision> {
-    // TODO: como representamos pared vs particula?
-    private long indexA;
-    private long indexB;
+    private final long indexA;
+    private final long indexB;
     private double tc;
 
     private boolean isInvalid = false;
